@@ -1,16 +1,21 @@
 # Dodownloader 
-A web application that allows users to download videos via URL.
-The application automatically deletes downloaded files after delivery to avoid overloading the server storage.
 
-## About 
-- This application is for educational use only.
 
-## Technologies used 
-- Python backend with Flask
-- yt-dlp for video extraction
-- HTML / CSS / JavaScript
-- Gunicorn (production server)
+### About 
+This is a web application that allows users to download Reels/TikTok videos via URL. <br>
+The downloader was developed for **educational use only**.
 
-## Demo
+### Technologies used 
+- Frontend: HTML, CSS, JavaScript
+
+- Backend: Python Flask
+
+- Video Downloading: yt-dlp
+
+- Video Processing: ffmpeg (required for yt-dlp with TikTok)
+
+- Deployment: Render 
+
+### Demo
 
 ![showcase](https://github.com/user-attachments/assets/ae5bda98-79ff-43a4-a6e3-ee8c3101c41c)
