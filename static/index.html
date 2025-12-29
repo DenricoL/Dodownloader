@@ -1,9 +1,17 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <title>InstaDL</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400..900&display=swap" rel="stylesheet">
+
 
     <style>
         * {
@@ -25,7 +33,7 @@
             width: 100%;
             max-width: 420px;
             border-radius: 12px;
-            box-shadow: 0 10px 30px rgba(0,0,0,.4);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, .4);
             color: #fff;
             text-align: center;
         }
@@ -97,78 +105,83 @@
         }
     </style>
 </head>
+
 <body>
 
-<div class="card">
-    <h1 style="  color: white; text-shadow: 0 0 10px #fff, 0 0 20px rgb(73, 223, 131);">Dodownloader</h1>
-    
-    <br>
+    <div class="card">
+        <h1 style="  color: white; text-shadow: 0 0 20px #84e494, 0 0 20px rgb(73, 223, 131); 
+            font-family: 'Cinzel', sans-serif;">Dodownloader</h1>
+        <br><br>
 
-    <input type="text" id="url" placeholder="Paste Instagram video link here">
+        <input type="text" id="url" placeholder="Paste video link here">
 
-    <button class="btn btn-3d" onclick="download()">Download</button>
+        <button class="btn btn-3d" onclick="download()">Download</button>
 
-    <div class="status" id="status"></div>
+        <div class="status" id="status"></div>
 
-    <footer>
-        For educational use only, not affiliated with Instagram.
-    </footer>
-</div>
+        <footer>
+            For educational use only, not affiliated with Instagram.
+            <br><br>
+            <a href="https://github.com/DenricoL/Dodownloader"
+                style="text-decoration: none; color: #fff; font-size: 2em;"><i class="fab fa-github"></i></a>
+        </footer>
+    </div>
 
-<script>
-    function download() {
-        const url = document.getElementById("url").value;
-        const status = document.getElementById("status");
+    <script>
+        function download() {
+            const url = document.getElementById("url").value;
+            const status = document.getElementById("status");
 
-        if (!url || !url.includes("instagram.com")) {
-            status.textContent = "Invalid Instagram URL.";
-            status.className = "status error";
-            return;
-        }
+            if (!url || !url.includes("instagram.com")) {
+                status.textContent = "Invalid Instagram URL.";
+                status.className = "status error";
+                return;
+            }
 
-        status.textContent = "Downloading...";
-        status.className = "status loading";
+            status.textContent = "Downloading...";
+            status.className = "status loading";
 
-        setTimeout(() => {
+            setTimeout(() => {
 
-            status.innerHTML = `
+                status.innerHTML = `
                 Video ready for download.<br><br>
                 <a href="#" download style="color:#4caf50;">Click here to download</a>
             `;
-            status.className = "status success";
-        }, 2000);
-    }
-</script>
+                status.className = "status success";
+            }, 2000);
+        }
+    </script>
 
-<script>
-async function download() {
-    const url = document.getElementById("url").value;
-    const status = document.getElementById("status");
+    <script>
+        async function download() {
+            const url = document.getElementById("url").value;
+            const status = document.getElementById("status");
 
-    status.textContent = "Downloading...";
-    
-    const response = await fetch("/download", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ url })
-    });
+            status.textContent = "Downloading...";
 
-    if (!response.ok) {
-        const error = await response.json();
-        status.textContent = error.error;
-        return;
-    }
+            const response = await fetch("/download", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ url })
+            });
 
-    const blob = await response.blob();
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = "video.mp4";
-    link.click();
+            if (!response.ok) {
+                const error = await response.json();
+                status.textContent = error.error;
+                return;
+            }
 
-    status.textContent = "Download completed!";
-}
-</script>
+            const blob = await response.blob();
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = "video.mp4";
+            link.click();
+
+            status.textContent = "Download completed!";
+        }
+    </script>
 
 
 </body>
+
 </html>
