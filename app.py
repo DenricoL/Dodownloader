@@ -5,6 +5,13 @@ import uuid
 import threading
 import time
 
+
+COOKIE_CONTENT = os.environ.get("COOKIE_FILE")
+
+with open("cookies.txt", "w", encoding="utf-8") as f:
+    f.write(COOKIE_CONTENT)
+
+
 app = Flask(__name__)
 
 # Pasta de downloads
