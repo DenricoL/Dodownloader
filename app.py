@@ -77,7 +77,50 @@ def download_video():
     except Exception as e:
         print("Erro:", e)
         return jsonify({"error": str(e)}), 500
+    
+# =========================
+# TikTok Downloader
+# =========================
+@app.route("/download/tiktok", methods=["POST"])
+def download_tiktok():
+    data = request.get_json()
+    url = data.get("url")
 
+    if not url or "tiktok.com" not in url:
+        return jsonify({"error": "Invalid TikTok URL"}), 400
+
+    video_id = str(uuid.uuid4())
+    output = os.path.join(DOWNLOAD_FOLDER, video_id)
+
+    ydl_opts = {
+        "outtmpl": f"{output}.%(ext)s",
+        "format": "bv*+ba/best",
+        "merge_output_format": "mp4",
+        "quiet": True,
+        "noplaylist": True,
+        "cookiefile": "cookies.txt",
+    }
+
+    try:
+        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+            ydl.download([url])
+
+        for file in os.listdir(DOWNLOAD_FOLDER):
+            if file.startswith(video_id):
+                file_path = os.path.join(DOWNLOAD_FOLDER, file)
+
+                response = send_file(file_path, as_attachment=True)
+                delete_file_later(file_path)
+
+                return response
+
+        return jsonify({"error": "Video not found"}), 500
+
+    except Exception as e:
+        print("Erro TikTok:", e)
+        return jsonify({
+            "error": "Failed to download TikTok video."
+        }), 500
 
 # =========================
 # Inicialização local

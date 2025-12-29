@@ -1,0 +1,9 @@
+# TikTok 
+cookies.txt
+
+# Downloads temporários
+downloads/
+
+# Ambiente virtual 
+venv/
+.env
