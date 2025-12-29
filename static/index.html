@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>InstaDL</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0f5c38, #2db168, #1c884c);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .card {
+            background: #111;
+            padding: 30px;
+            width: 100%;
+            max-width: 420px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,.4);
+            color: #fff;
+            text-align: center;
+        }
+
+        .card h1 {
+            margin-bottom: 10px;
+        }
+
+        .card p {
+            font-size: 14px;
+            color: #ccc;
+            margin-bottom: 20px;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border-radius: 6px;
+            border: none;
+            outline: none;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 6px;
+            background: #24a13f;
+            color: #fff;
+            font-size: 16px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .btn-3d {
+            color: white;
+            transform: translateY(0);
+            box-shadow: 0 5px 0 #0d6b21;
+        }
+
+        .btn-3d:active {
+            transform: translateY(5px);
+            box-shadow: 0 0 0 #0d6b21;
+        }
+
+        .status {
+            margin-top: 15px;
+            font-size: 14px;
+        }
+
+        .loading {
+            color: #fcb045;
+        }
+
+        .error {
+            color: #ff5252;
+        }
+
+        .success {
+            color: #4caf50;
+        }
+
+        footer {
+            margin-top: 20px;
+            font-size: 12px;
+            color: #aaa;
+        }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h1 style="  color: white; text-shadow: 0 0 10px #fff, 0 0 20px rgb(73, 223, 131);">Dodownloader</h1>
+    
+    <br>
+
+    <input type="text" id="url" placeholder="Paste Instagram video link here">
+
+    <button class="btn btn-3d" onclick="download()">Download</button>
+
+    <div class="status" id="status"></div>
+
+    <footer>
+        For educational use only, not affiliated with Instagram.
+    </footer>
+</div>
+
+<script>
+    function download() {
+        const url = document.getElementById("url").value;
+        const status = document.getElementById("status");
+
+        if (!url || !url.includes("instagram.com")) {
+            status.textContent = "Invalid Instagram URL.";
+            status.className = "status error";
+            return;
+        }
+
+        status.textContent = "Downloading...";
+        status.className = "status loading";
+
+        setTimeout(() => {
+
+            status.innerHTML = `
+                Video ready for download.<br><br>
+                <a href="#" download style="color:#4caf50;">Click here to download</a>
+            `;
+            status.className = "status success";
+        }, 2000);
+    }
+</script>
+
+<script>
+async function download() {
+    const url = document.getElementById("url").value;
+    const status = document.getElementById("status");
+
+    status.textContent = "Downloading...";
+    
+    const response = await fetch("/download", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url })
+    });
+
+    if (!response.ok) {
+        const error = await response.json();
+        status.textContent = error.error;
+        return;
+    }
+
+    const blob = await response.blob();
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = "video.mp4";
+    link.click();
+
+    status.textContent = "Download completed!";
+}
+</script>
+
+
+</body>
+</html>
