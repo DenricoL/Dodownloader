@@ -105,7 +105,7 @@ def download_tiktok():
         },
         "quiet": True,
         "noplaylist": True,
-        "cookiefile": "cookies.txt",
+        "cookiefile": "cookies_tktk.txt",
     }
 
     try:
@@ -199,6 +199,13 @@ def download_youtube():
         "quiet": True,
 
         "max_filesize": 300 * 1024 * 1024, # limite 300 MB
+
+        "cookiefile": "cookies_yt.txt",
+
+        "user_agent": (
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+        "AppleWebKit/537.36 Chrome/120.0.0.0 Safari/537.36"
+        ),
         
         "postprocessors": [{
             "key": "FFmpegVideoConvertor",
