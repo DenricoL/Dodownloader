@@ -38,20 +38,18 @@
         </footer>
     </div>
 
-    <!-- Pop-up de informações -->
     <div id="popup" class="popup">
         <div class="popupcontent">
             <h2 style="margin-bottom:20px; color: #84e494;">Welcome to Dodownloader!</h2>
 
             <p>Works with TikTok, Instagram, Twitter, Facebook, and YouTube Shorts.</p>
             
-            <p style="color: #da8277;">Warning: TikTok videos may not work</p>
-            <button id="closePopup" class="closePopup">Fechar</button>
+            <p style="color: #da8277;">Warning: TikTok and YouTube videos may not be available for download</p>
+            <button id="closePopup" class="closePopup">Close</button>
         </div>
     </div>
 
     <script>
-    // Mostra o pop-up ao clicar no ícone fa-book
     document.addEventListener('DOMContentLoaded', function() {
         var infoBtn = document.getElementById('infoBtn');
         var popup = document.getElementById('popup');
@@ -64,7 +62,6 @@
             closePopup.addEventListener('click', function() {
                 popup.style.display = 'none';
             });
-            // Fecha o pop-up ao clicar fora do conteúdo
             popup.addEventListener('click', function(e) {
                 if (e.target === popup) {
                     popup.style.display = 'none';
