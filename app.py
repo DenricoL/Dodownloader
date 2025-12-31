@@ -216,6 +216,14 @@ def download_youtube():
         "Mozilla/5.0 (Linux; Android 11; Pixel 5) "
         "AppleWebKit/537.36 Chrome/120.0.0.0 Mobile Safari/537.36"
         ),
+
+        
+        "cookiefile": YOUTUBE_COOKIE_FILE,
+        "max_filesize": 300 * 1024 * 1024,
+        "postprocessors": [{
+            "key": "FFmpegVideoConvertor",
+            "preferedformat": "mp4"
+        }]
     }
 
     try:
