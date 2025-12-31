@@ -8,19 +8,43 @@ import time
 
 app = Flask(__name__)
 
+# =========================
 # Pasta de downloads
+# =========================
 DOWNLOAD_FOLDER = "downloads"
 os.makedirs(DOWNLOAD_FOLDER, exist_ok=True)
 
+
+# =================================
+# cookies de variáveis de ambiente
+# ==================================
+def load_cookies_from_env(env_name, file_name):
+    cookies = os.getenv(env_name)
+    if not cookies:
+        print(f"⚠️ Variável de ambiente {env_name} não encontrada")
+        return None
+
+    with open(file_name, "w", encoding="utf-8") as f:
+        f.write(cookies)
+
+    print(f"✅ Cookies carregados: {file_name}")
+    return file_name
+
+
+TIKTOK_COOKIE_FILE = load_cookies_from_env("TIKTOK_COOKIES", "cookies_tktk.txt")
+YOUTUBE_COOKIE_FILE = load_cookies_from_env("YOUTUBE_COOKIES", "cookies_yt.txt")
+
+
 # =========================
-# deletar arquivo depois do envio
+# Deletar arquivo depois do envio
 # =========================
 def delete_file_later(path, delay=15):
     def task():
         time.sleep(delay)
         if os.path.exists(path):
             os.remove(path)
-            print(f"Arquivo apagado: {path}")
+            print(f"🗑️ Arquivo apagado: {path}")
+
     threading.Thread(target=task, daemon=True).start()
 
 
@@ -33,52 +57,44 @@ def home():
 
 
 # =========================
-# Rota de download original (Instagram)
+# Instagram Downloader
 # =========================
 @app.route("/download", methods=["POST"])
-def download_video():
+def download_instagram():
     data = request.get_json()
     url = data.get("url")
 
     if not url or "instagram.com" not in url:
         return jsonify({"error": "Invalid Instagram URL"}), 400
 
-    # ID único para o arquivo
     video_id = str(uuid.uuid4())
     output = os.path.join(DOWNLOAD_FOLDER, video_id)
 
-    # Opções do yt-dlp
     ydl_opts = {
         "outtmpl": f"{output}.%(ext)s",
         "format": "mp4",
         "quiet": True,
-        "max_filesize": 150 * 1024 * 1024  # limite 150 MB 
+        "max_filesize": 150 * 1024 * 1024
     }
 
     try:
-        # Download do vídeo
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             ydl.download([url])
 
-        # Localiza o arquivo baixado
         for file in os.listdir(DOWNLOAD_FOLDER):
             if file.startswith(video_id):
                 file_path = os.path.join(DOWNLOAD_FOLDER, file)
-
-                # Envia o arquivo
                 response = send_file(file_path, as_attachment=True)
-
-                # Agenda a exclusão
                 delete_file_later(file_path)
-
                 return response
 
         return jsonify({"error": "Error locating video"}), 500
 
     except Exception as e:
-        print("Erro:", e)
-        return jsonify({"error": str(e)}), 500
-    
+        print("Erro Instagram:", e)
+        return jsonify({"error": "Failed to download Instagram video."}), 500
+
+
 # =========================
 # TikTok Downloader
 # =========================
@@ -97,15 +113,17 @@ def download_tiktok():
         "outtmpl": f"{output}.%(ext)s",
         "format": "bv*+ba/best",
         "merge_output_format": "mp4",
-        "http_headers": {
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-                          "AppleWebKit/537.36 (KHTML, like Gecko) "
-                          "Chrome/120.0.0.0 Safari/537.36",
-            "Referer": "https://www.tiktok.com/",
-        },
         "quiet": True,
         "noplaylist": True,
-        "cookiefile": "cookies_tktk.txt",
+        "cookiefile": TIKTOK_COOKIE_FILE,
+        "http_headers": {
+            "User-Agent": (
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                "AppleWebKit/537.36 (KHTML, like Gecko) "
+                "Chrome/120.0.0.0 Safari/537.36"
+            ),
+            "Referer": "https://www.tiktok.com/"
+        }
     }
 
     try:
@@ -115,21 +133,17 @@ def download_tiktok():
         for file in os.listdir(DOWNLOAD_FOLDER):
             if file.startswith(video_id):
                 file_path = os.path.join(DOWNLOAD_FOLDER, file)
-
                 response = send_file(file_path, as_attachment=True)
                 delete_file_later(file_path)
-
                 return response
 
         return jsonify({"error": "Video not found"}), 500
 
     except Exception as e:
         print("Erro TikTok:", e)
-        return jsonify({
-            "error": "Failed to download TikTok video."
-        }), 500
-        
-        
+        return jsonify({"error": "Failed to download TikTok video."}), 500
+
+
 # =========================
 # Twitter (X) Downloader
 # =========================
@@ -149,11 +163,7 @@ def download_twitter():
         "format": "bv*+ba/best",
         "merge_output_format": "mp4",
         "quiet": True,
-        "noplaylist": True,
-        "user_agent": (
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-            "AppleWebKit/537.36 Chrome/120.0.0.0 Safari/537.36"
-        )
+        "noplaylist": True
     }
 
     try:
@@ -163,10 +173,8 @@ def download_twitter():
         for file in os.listdir(DOWNLOAD_FOLDER):
             if file.startswith(video_id):
                 file_path = os.path.join(DOWNLOAD_FOLDER, file)
-
                 response = send_file(file_path, as_attachment=True)
                 delete_file_later(file_path)
-
                 return response
 
         return jsonify({"error": "Video not found"}), 500
@@ -174,6 +182,7 @@ def download_twitter():
     except Exception as e:
         print("Erro Twitter:", e)
         return jsonify({"error": "Failed to download Twitter video."}), 500
+
 
 # =========================
 # YouTube Downloader
@@ -191,26 +200,16 @@ def download_youtube():
 
     ydl_opts = {
         "outtmpl": f"{output}.%(ext)s",
-
         "format": "bv*[ext=mp4]+ba[ext=m4a]/b[ext=mp4]/best",
         "merge_output_format": "mp4",
-
-        "noplaylist": True,
         "quiet": True,
-
-        "max_filesize": 300 * 1024 * 1024, # limite 300 MB
-
-        "cookiefile": "cookies_yt.txt",
-
-        "user_agent": (
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-        "AppleWebKit/537.36 Chrome/120.0.0.0 Safari/537.36"
-        ),
-        
+        "noplaylist": True,
+        "cookiefile": YOUTUBE_COOKIE_FILE,
+        "max_filesize": 300 * 1024 * 1024,
         "postprocessors": [{
             "key": "FFmpegVideoConvertor",
             "preferedformat": "mp4"
-        }],
+        }]
     }
 
     try:
@@ -220,19 +219,15 @@ def download_youtube():
         for file in os.listdir(DOWNLOAD_FOLDER):
             if file.startswith(video_id):
                 file_path = os.path.join(DOWNLOAD_FOLDER, file)
-
                 response = send_file(file_path, as_attachment=True)
                 delete_file_later(file_path)
-
                 return response
 
         return jsonify({"error": "Video not found"}), 500
 
     except Exception as e:
         print("Erro YouTube:", e)
-        return jsonify({
-            "error": "Failed to download YouTube video."
-        }), 500
+        return jsonify({"error": "Failed to download YouTube video."}), 500
 
 
 # =========================
