@@ -4,7 +4,7 @@
 }
 
 body {
-    background: linear-gradient(135deg, #0f5c38, #2db168, #1c884c);
+    background: #152b22;
     min-height: 100vh;
     display: flex;
     align-items: center;
@@ -12,7 +12,7 @@ body {
 }
 
 .card {
-    background: #111;
+    background: #161515;
     padding: 30px;
     width: 100%;
     max-width: 420px;
@@ -37,7 +37,8 @@ input {
     padding: 12px;
     border-radius: 6px;
     border: none;
-    outline: none;
+    outline-color: #1a792d;
+    outline-width: thick;
     margin-bottom: 15px;
     font-size: 14px;
 }
@@ -47,7 +48,7 @@ button {
     padding: 12px;
     border: none;
     border-radius: 6px;
-    background: #24a13f;
+    background: #1a792d;
     color: #fff;
     font-size: 16px;
     cursor: pointer;
@@ -57,7 +58,9 @@ button {
 .btn-3d {
     color: white;
     transform: translateY(0);
-    box-shadow: 0 5px 0 #0d6b21;
+    box-shadow: 0 5px 0 #083f14;
+    font-family: 'Saira', sans-serif;
+    font-weight: 600;
 }
 
 .btn-3d:active {
@@ -84,8 +87,8 @@ button {
 
 footer {
     margin-top: 20px;
-    font-size: 12px;
-    color: #aaa;
+    font-size: 11px;
+    color: #aaaaaac4;
 }
 
 .icon {
@@ -97,4 +100,42 @@ footer {
 .icon:hover {
     color: #24a13f;
     transition: color 0.3s;
+}
+
+.popupcontent {
+    background:#222222d5; 
+    backdrop-filter: blur(20px);
+    color:#fff; 
+    padding:40px 30px; 
+    border-radius:16px;
+    width: 100%; 
+    max-width:420px; 
+    text-align: center;
+    font-size: 12px;
+    position:relative; 
+    border: 5px solid;
+    border-color: #f7f7f71a;
+}
+
+.popup {
+    display: none; 
+    position: fixed;
+    padding: 30px;
+    width: 100%;
+    max-width: 420px;
+    height: 100vh;
+    border-radius: 12px;
+    justify-content:center; 
+    align-items:center;
+}
+
+.closePopup {
+    margin-top:30px; 
+    padding:10px 30px; 
+    background:#135a21; 
+    color:#f7f7f7; 
+    border:none; 
+    border-radius:8px; 
+    font-weight:bold; 
+    cursor:pointer;
 }

@@ -18,6 +18,12 @@ async function download() {
     } else if (url.includes("tiktok.com")) {
         endpoint = "/download/tiktok";
         platform = "TikTok";
+    } else if (url.includes("twitter.com") || url.includes("x.com")) {
+        endpoint = "/download/twitter";
+        platform = "Twitter";
+    } else if (url.includes("youtube.com") || url.includes("youtu.be")) {
+        endpoint = "/download/youtube";
+        platform = "YouTube";
     } else {
         status.textContent = "Only Instagram and TikTok URLs are supported.";
         status.className = "status error";
@@ -56,3 +62,11 @@ async function download() {
         status.className = "status error";
     }
 }
+
+// Download on Enter key press
+document.getElementById('url').addEventListener('keydown', function(event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                document.querySelector('.btn.btn-3d').click();
+            }
+        });

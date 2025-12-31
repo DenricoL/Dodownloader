@@ -12,28 +12,68 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400..900&display=swap" rel="stylesheet">
-
+    <link href="https://fonts.googleapis.com/css2?family=Saira:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    
 </head>
 
 <body>
 
     <div class="card">
-        <h1 style="  color: white; text-shadow: 0 0 20px #84e494, 0 0 20px rgb(73, 223, 131); 
-            font-family: 'Cinzel', sans-serif;">Dodownloader</h1>
+        <h1 style="  color: white; text-shadow: 0 0 20px #84e494, 0 0 40px rgb(73, 223, 131); 
+            font-family: 'Saira', sans-serif; font-size: 2.3em;">Dodownloader</h1>
         <br><br>
-        <input type="text" id="url" placeholder="Paste video link here">
+        <input type="text" id="url" placeholder="Paste URL here">
 
+        
         <button class="btn btn-3d" onclick="download()">Download</button>
 
         <div class="status" id="status"></div>
 
         <footer>
-            For educational use only, not affiliated with Instagram or TikTok.
+            For educational use only, not affiliated with any platform.
             <br><br>
-            <a href="https://github.com/DenricoL/Dodownloader" class="icon"><i class="fab fa-github"></i></a>
+            <div style="display: flex; gap: 20px; justify-content: center;">
+                <a href="https://github.com/DenricoL/Dodownloader" class="icon"><i class="fab fa-github"></i></a>
+                <a href="#" class="icon" id="infoBtn"><i class="fa-solid fa-book"></i></a>
+            </div>
         </footer>
     </div>
 
+    <!-- Pop-up de informações -->
+    <div id="popup" class="popup">
+        <div class="popupcontent">
+            <h2 style="margin-bottom:20px; color: #84e494;">Welcome to Dodownloader!</h2>
+
+            <p>Works with TikTok, Instagram, Twitter, Facebook, and YouTube Shorts.</p>
+            
+            <p style="color: #da8277;">Warning: TikTok videos may not work</p>
+            <button id="closePopup" class="closePopup">Fechar</button>
+        </div>
+    </div>
+
+    <script>
+    // Mostra o pop-up ao clicar no ícone fa-book
+    document.addEventListener('DOMContentLoaded', function() {
+        var infoBtn = document.getElementById('infoBtn');
+        var popup = document.getElementById('popup');
+        var closePopup = document.getElementById('closePopup');
+        if (infoBtn && popup && closePopup) {
+            infoBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                popup.style.display = 'flex';
+            });
+            closePopup.addEventListener('click', function() {
+                popup.style.display = 'none';
+            });
+            // Fecha o pop-up ao clicar fora do conteúdo
+            popup.addEventListener('click', function(e) {
+                if (e.target === popup) {
+                    popup.style.display = 'none';
+                }
+            });
+        }
+    });
+    </script>
     <script src="/static/js/script.js"></script>
 
 </body>
