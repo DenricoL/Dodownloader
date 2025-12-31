@@ -105,7 +105,7 @@ def download_tiktok():
         },
         "quiet": True,
         "noplaylist": True,
-        "cookiefile": "cookies_tktk.txt",
+        "cookiefile-tktk": "cookies_tktk.txt",
     }
 
     try:
@@ -200,7 +200,7 @@ def download_youtube():
 
         "max_filesize": 300 * 1024 * 1024, # limite 300 MB
 
-        "cookiefile": "cookies_yt.txt",
+        "cookiefile-yt": "cookies_yt.txt",
 
         "user_agent": (
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
