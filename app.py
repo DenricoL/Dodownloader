@@ -202,14 +202,20 @@ def download_youtube():
         "outtmpl": f"{output}.%(ext)s",
         "format": "bv*[ext=mp4]+ba[ext=m4a]/b[ext=mp4]/best",
         "merge_output_format": "mp4",
+        
         "quiet": True,
         "noplaylist": True,
-        "cookiefile": YOUTUBE_COOKIE_FILE,
-        "max_filesize": 300 * 1024 * 1024,
-        "postprocessors": [{
-            "key": "FFmpegVideoConvertor",
-            "preferedformat": "mp4"
-        }]
+        
+        "extractor_args": {
+        "youtube": {
+            "player_client": ["android"]
+            }
+        },
+        
+        "user_agent": (
+        "Mozilla/5.0 (Linux; Android 11; Pixel 5) "
+        "AppleWebKit/537.36 Chrome/120.0.0.0 Mobile Safari/537.36"
+        ),
     }
 
     try:
