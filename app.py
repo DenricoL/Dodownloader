@@ -6,12 +6,6 @@ import threading
 import time
 
 
-COOKIE_CONTENT = os.environ.get("COOKIE_FILE")
-
-with open("cookies.txt", "w", encoding="utf-8") as f:
-    f.write(COOKIE_CONTENT)
-
-
 app = Flask(__name__)
 
 # Pasta de downloads
@@ -39,7 +33,7 @@ def home():
 
 
 # =========================
-# Rota de download (API)
+# Rota de download original (Instagram)
 # =========================
 @app.route("/download", methods=["POST"])
 def download_video():
@@ -128,6 +122,105 @@ def download_tiktok():
         return jsonify({
             "error": "Failed to download TikTok video."
         }), 500
+        
+        
+# =========================
+# Twitter (X) Downloader
+# =========================
+@app.route("/download/twitter", methods=["POST"])
+def download_twitter():
+    data = request.get_json()
+    url = data.get("url")
+
+    if not url or ("twitter.com" not in url and "x.com" not in url):
+        return jsonify({"error": "Invalid Twitter/X URL"}), 400
+
+    video_id = str(uuid.uuid4())
+    output = os.path.join(DOWNLOAD_FOLDER, video_id)
+
+    ydl_opts = {
+        "outtmpl": f"{output}.%(ext)s",
+        "format": "bv*+ba/best",
+        "merge_output_format": "mp4",
+        "quiet": True,
+        "noplaylist": True,
+        "user_agent": (
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+            "AppleWebKit/537.36 Chrome/120.0.0.0 Safari/537.36"
+        )
+    }
+
+    try:
+        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+            ydl.download([url])
+
+        for file in os.listdir(DOWNLOAD_FOLDER):
+            if file.startswith(video_id):
+                file_path = os.path.join(DOWNLOAD_FOLDER, file)
+
+                response = send_file(file_path, as_attachment=True)
+                delete_file_later(file_path)
+
+                return response
+
+        return jsonify({"error": "Video not found"}), 500
+
+    except Exception as e:
+        print("Erro Twitter:", e)
+        return jsonify({"error": "Failed to download Twitter video."}), 500
+
+# =========================
+# YouTube Downloader
+# =========================
+@app.route("/download/youtube", methods=["POST"])
+def download_youtube():
+    data = request.get_json()
+    url = data.get("url")
+
+    if not url or ("youtube.com" not in url and "youtu.be" not in url):
+        return jsonify({"error": "Invalid YouTube URL"}), 400
+
+    video_id = str(uuid.uuid4())
+    output = os.path.join(DOWNLOAD_FOLDER, video_id)
+
+    ydl_opts = {
+        "outtmpl": f"{output}.%(ext)s",
+
+        "format": "bv*[ext=mp4]+ba[ext=m4a]/b[ext=mp4]/best",
+        "merge_output_format": "mp4",
+
+        "noplaylist": True,
+        "quiet": True,
+
+        "max_filesize": 300 * 1024 * 1024, # limite 300 MB
+        
+        "postprocessors": [{
+            "key": "FFmpegVideoConvertor",
+            "preferedformat": "mp4"
+        }],
+    }
+
+    try:
+        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+            ydl.download([url])
+
+        for file in os.listdir(DOWNLOAD_FOLDER):
+            if file.startswith(video_id):
+                file_path = os.path.join(DOWNLOAD_FOLDER, file)
+
+                response = send_file(file_path, as_attachment=True)
+                delete_file_later(file_path)
+
+                return response
+
+        return jsonify({"error": "Video not found"}), 500
+
+    except Exception as e:
+        print("Erro YouTube:", e)
+        return jsonify({
+            "error": "Failed to download YouTube video."
+        }), 500
+
 
 # =========================
 # Inicialização local
