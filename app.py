@@ -49,50 +49,11 @@ def delete_file_later(path, delay=15):
 
 
 # =========================
-# Rota principal (front-end)
+# Rota principal
 # =========================
 @app.route("/")
 def home():
     return app.send_static_file("index.html")
-
-
-# =========================
-# Instagram Downloader
-# =========================
-@app.route("/download", methods=["POST"])
-def download_instagram():
-    data = request.get_json()
-    url = data.get("url")
-
-    if not url or "instagram.com" not in url:
-        return jsonify({"error": "Invalid Instagram URL"}), 400
-
-    video_id = str(uuid.uuid4())
-    output = os.path.join(DOWNLOAD_FOLDER, video_id)
-
-    ydl_opts = {
-        "outtmpl": f"{output}.%(ext)s",
-        "format": "mp4",
-        "quiet": True,
-        "max_filesize": 150 * 1024 * 1024
-    }
-
-    try:
-        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-            ydl.download([url])
-
-        for file in os.listdir(DOWNLOAD_FOLDER):
-            if file.startswith(video_id):
-                file_path = os.path.join(DOWNLOAD_FOLDER, file)
-                response = send_file(file_path, as_attachment=True)
-                delete_file_later(file_path)
-                return response
-
-        return jsonify({"error": "Error locating video"}), 500
-
-    except Exception as e:
-        print("Erro Instagram:", e)
-        return jsonify({"error": "Failed to download Instagram video."}), 500
 
 
 # =========================
@@ -115,16 +76,14 @@ def download_tiktok():
         "merge_output_format": "mp4",
         "quiet": True,
         "noplaylist": True,
-        "cookiefile": TIKTOK_COOKIE_FILE,
         "http_headers": {
-            "User-Agent": (
-                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-                "AppleWebKit/537.36 (KHTML, like Gecko) "
-                "Chrome/120.0.0.0 Safari/537.36"
-            ),
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
             "Referer": "https://www.tiktok.com/"
         }
     }
+
+    if TIKTOK_COOKIE_FILE:
+        ydl_opts["cookiefile"] = TIKTOK_COOKIE_FILE
 
     try:
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
@@ -144,45 +103,6 @@ def download_tiktok():
         return jsonify({"error": "Failed to download TikTok video."}), 500
 
 
-# =========================
-# Twitter (X) Downloader
-# =========================
-@app.route("/download/twitter", methods=["POST"])
-def download_twitter():
-    data = request.get_json()
-    url = data.get("url")
-
-    if not url or ("twitter.com" not in url and "x.com" not in url):
-        return jsonify({"error": "Invalid Twitter/X URL"}), 400
-
-    video_id = str(uuid.uuid4())
-    output = os.path.join(DOWNLOAD_FOLDER, video_id)
-
-    ydl_opts = {
-        "outtmpl": f"{output}.%(ext)s",
-        "format": "bv*+ba/best",
-        "merge_output_format": "mp4",
-        "quiet": True,
-        "noplaylist": True
-    }
-
-    try:
-        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-            ydl.download([url])
-
-        for file in os.listdir(DOWNLOAD_FOLDER):
-            if file.startswith(video_id):
-                file_path = os.path.join(DOWNLOAD_FOLDER, file)
-                response = send_file(file_path, as_attachment=True)
-                delete_file_later(file_path)
-                return response
-
-        return jsonify({"error": "Video not found"}), 500
-
-    except Exception as e:
-        print("Erro Twitter:", e)
-        return jsonify({"error": "Failed to download Twitter video."}), 500
-
 
 # =========================
 # YouTube Downloader
@@ -196,6 +116,7 @@ def download_youtube():
         return jsonify({"error": "Invalid YouTube URL"}), 400
 
     video_id = str(uuid.uuid4())
+    output = os.path.join(DOWNLOAD_FOLDER, video_id)
 
     ydl_opts = {
         "outtmpl": f"{output}.%(ext)s",
@@ -204,20 +125,16 @@ def download_youtube():
         
         "quiet": True,
         "noplaylist": True,
-        
-        "extractor_args": {
-        "youtube": {
-            "player_client": ["android"]
-            }
-        },
-        
-        "cookiefile": YOUTUBE_COOKIE_FILE,
         "max_filesize": 300 * 1024 * 1024,
-        "postprocessors": [{
-            "key": "FFmpegVideoConvertor",
-            "preferedformat": "mp4"
-        }]
+        "extractor_args": {
+            "youtube": {
+                "player_client": ["android"]
+            }
+        }
     }
+
+    if YOUTUBE_COOKIE_FILE:
+        ydl_opts["cookiefile"] = YOUTUBE_COOKIE_FILE
 
     try:
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
