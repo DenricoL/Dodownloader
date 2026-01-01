@@ -4,6 +4,7 @@ import os
 import uuid
 import threading
 import time
+import subprocess
 
 
 app = Flask(__name__)
@@ -54,6 +55,85 @@ def delete_file_later(path, delay=15):
 @app.route("/")
 def home():
     return app.send_static_file("index.html")
+
+
+# =========================
+# Instagram Downloader
+# =========================
+@app.route("/download", methods=["POST"])
+def download_instagram():
+    data = request.get_json()
+    url = data.get("url")
+
+    if not url or "instagram.com" not in url:
+        return jsonify({"error": "Invalid Instagram URL"}), 400
+
+    video_id = str(uuid.uuid4())
+    output = os.path.join(DOWNLOAD_FOLDER, video_id)
+
+    ydl_opts = {
+        "outtmpl": f"{output}.%(ext)s",
+        "format": "mp4",
+        "quiet": True,
+        "max_filesize": 150 * 1024 * 1024
+    }
+
+    try:
+        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+            ydl.download([url])
+
+        for file in os.listdir(DOWNLOAD_FOLDER):
+            if file.startswith(video_id):
+                file_path = os.path.join(DOWNLOAD_FOLDER, file)
+                response = send_file(file_path, as_attachment=True)
+                delete_file_later(file_path)
+                return response
+
+        return jsonify({"error": "Error locating video"}), 500
+
+    except Exception as e:
+        print("Erro Instagram:", e)
+        return jsonify({"error": "Failed to download Instagram video."}), 500
+
+
+# =========================
+# Twitter (X) Downloader
+# =========================
+@app.route("/download/twitter", methods=["POST"])
+def download_twitter():
+    data = request.get_json()
+    url = data.get("url")
+
+    if not url or ("twitter.com" not in url and "x.com" not in url):
+        return jsonify({"error": "Invalid Twitter/X URL"}), 400
+
+    video_id = str(uuid.uuid4())
+    output = os.path.join(DOWNLOAD_FOLDER, video_id)
+
+    ydl_opts = {
+        "outtmpl": f"{output}.%(ext)s",
+        "format": "(bv*+ba/best)/bv*/best",
+        "merge_output_format": "mp4",
+        "quiet": True,
+        "noplaylist": True
+    }
+
+    try:
+        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+            ydl.download([url])
+
+        for file in os.listdir(DOWNLOAD_FOLDER):
+            if file.startswith(video_id):
+                file_path = os.path.join(DOWNLOAD_FOLDER, file)
+                response = send_file(file_path, as_attachment=True)
+                delete_file_later(file_path)
+                return response
+
+        return jsonify({"error": "Video not found"}), 500
+
+    except Exception as e:
+        print("Erro Twitter:", e)
+        return jsonify({"error": "Failed to download Twitter video."}), 500
 
 
 # =========================
