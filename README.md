@@ -2,7 +2,7 @@
 
 
 ### About 
-This is a web application that allows users to download Tiktok/Instagram/Youtube/Twitter videos via URL. <br>
+This is a web application that allows users to download Instagram & Twitter videos via URL. <br>
 The downloader was developed for **educational use only**.
 
 ### Technologies used 
