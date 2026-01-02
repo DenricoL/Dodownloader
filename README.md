@@ -12,7 +12,7 @@ The downloader was developed for **educational use only**.
 
 - Video Downloading: yt-dlp
 
-- Video Processing: ffmpeg (required for yt-dlp with TikTok & Youtube)
+- Video Processing: ffmpeg 
 
 - Deployment: Render 
 
