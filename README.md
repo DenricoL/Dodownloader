@@ -1,21 +1,24 @@
 # Dodownloader 
 
+## About 
+This is a web application where you can: <br>
+- Download Instagram & Twitter videos
+- Convert .mp4 files to .gif
 
-### About 
-This is a web application that allows users to download Instagram & Twitter videos via URL. <br>
 The downloader was developed for **educational use only**.
 
-### Technologies used 
+## Technologies used 
 - Frontend: HTML, CSS, JavaScript
 
 - Backend: Python Flask
 
-- Video Downloading: yt-dlp
+- Downloader: yt-dlp
 
-- Video Processing: ffmpeg 
+- Converter: ffmpeg 
 
 - Deployment: Render 
 
-### Demo
+## Demo
 
-![showcase](https://github.com/user-attachments/assets/ae5bda98-79ff-43a4-a6e3-ee8c3101c41c)
+<img width="603" height="623" alt="image" src="https://github.com/user-attachments/assets/c3cfc56c-098a-411f-b527-5a80d1131560" />
+
