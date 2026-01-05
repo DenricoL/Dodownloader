@@ -12,65 +12,115 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400..900&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Saira:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
-    
+    <link href="https://fonts.googleapis.com/css2?family=Saira:ital,wght@0,100..900;1,100..900&display=swap"
+        rel="stylesheet">
+
 </head>
 
 <body>
+    <header>
+        <a href="#" style="text-decoration: none;"><h1 style="  color: white; text-shadow: 0 0 20px #84e494, 0 0 40px rgb(73, 223, 131); 
+            font-family: 'Saira', sans-serif; font-size: 2.3em; text-align: center;"> Dodownloader :) </h1>
+        </a>
+        <nav>
+            <a href="#downloader-section">Video Downloader</a>
+            <a href="#giffie-section">MP4 to GIF</a>
+            <a href="https://github.com/DenricoL/Dodownloader" class="icon"><i class="fab fa-github"></i> Github</a>
+            <a href="#" class="icon" id="infoBtn"><i class="fa-solid fa-book"></i> Notes</a>
 
-    <div class="card">
-        <h1 style="  color: white; text-shadow: 0 0 20px #84e494, 0 0 40px rgb(73, 223, 131); 
-            font-family: 'Saira', sans-serif; font-size: 2.3em;">Dodownloader</h1>
-        <br><br>
-        <input type="text" id="url" placeholder="Paste video link here">
+        </nav>
+    </header>
+    <div class="cards">
+        <div class="card">
+            <section id="downloader-section">
+                <h1 style="  color: white; text-shadow: 0 0 20px #84e494, 0 0 40px rgb(73, 223, 131); 
+            font-size: 2em;">Video Downloader</h1>
+                <br><br>
+                <input type="text" id="url" placeholder="Paste video link here">
 
-        <button class="btn btn-3d" onclick="download()">Download</button>
+                <button class="btn btn-3d" onclick="download()">Download</button>
 
-        <div class="status" id="status"></div>
+                <div class="status" id="status"></div>
 
-        <footer>
-            For educational use only, not affiliated with any platform.
-            <br><br>
-            <div style="display: flex; gap: 20px; justify-content: center;">
-                <a href="https://github.com/DenricoL/Dodownloader" class="icon"><i class="fab fa-github"></i></a>
-                <a href="#" class="icon" id="infoBtn"><i class="fa-solid fa-book"></i></a>
-            </div>
-        </footer>
+                <footer>
+                    For educational use only, not affiliated with any platform.
+                    <br><br>
+                    <div style="display: flex; gap: 20px; justify-content: center;">
+                    </div>
+                </footer>
+            </section>
+        </div>
+
+
+        <div class="card">
+            <section id="giffie-section">
+                <h1 style="  color: white; text-shadow: 0 0 20px #84e494, 0 0 40px rgb(73, 223, 131); 
+            font-size: 2em;">Mp4 to GIF</h1>
+                <br><br>
+
+                <form action="/mp4-to-gif" method="post" enctype="multipart/form-data">
+                    <input type="file" name="video" accept="video/mp4">
+                    <button class="btn btn-3d">Convert</button>
+                </form>
+
+                <div class="status" id="status"></div>
+
+                <footer>
+                    Try with small mp4 files for best results!!
+                    <br><br>
+                    <div style="display: flex; gap: 20px; justify-content: center;">
+                    </div>
+                </footer>
+            </section>
+        </div>
     </div>
 
     <div id="popup" class="popup">
         <div class="popupcontent">
             <h2 style="margin-bottom:20px; color: #84e494;">Welcome to Dodownloader!</h2>
 
-            <p>Works with TikTok, Instagram, Twitter, Facebook, and YouTube Shorts.</p>
-            
+            <p>The downloader works with TikTok, Instagram, Twitter, Facebook, and YouTube Shorts.
+                The converter works with small mp4 files</p>
+
             <p style="color: #da8277;">Warning: TikTok and YouTube videos may not be available for download</p>
+
             <button id="closePopup" class="closePopup">Close</button>
         </div>
     </div>
 
+    <footer>
+        <div style="display: flex; gap: 20px; justify-content: center;">
+            
+        </div>
+    </footer>
+
     <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        var infoBtn = document.getElementById('infoBtn');
-        var popup = document.getElementById('popup');
-        var closePopup = document.getElementById('closePopup');
-        if (infoBtn && popup && closePopup) {
-            infoBtn.addEventListener('click', function(e) {
-                e.preventDefault();
-                popup.style.display = 'flex';
-            });
-            closePopup.addEventListener('click', function() {
-                popup.style.display = 'none';
-            });
-            popup.addEventListener('click', function(e) {
-                if (e.target === popup) {
+        document.addEventListener('DOMContentLoaded', function () {
+            var infoBtn = document.getElementById('infoBtn');
+            var popup = document.getElementById('popup');
+            var closePopup = document.getElementById('closePopup');
+            if (infoBtn && popup && closePopup) {
+                infoBtn.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    popup.style.display = 'flex';
+                });
+                closePopup.addEventListener('click', function () {
                     popup.style.display = 'none';
-                }
-            });
-        }
-    });
+                });
+                popup.addEventListener('click', function (e) {
+                    if (e.target === popup) {
+                        popup.style.display = 'none';
+                    }
+                });
+            }
+        });
     </script>
     <script src="/static/js/script.js"></script>
+
+
+
+
+
 
 </body>
 

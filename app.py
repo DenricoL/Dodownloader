@@ -15,6 +15,90 @@ app = Flask(__name__)
 DOWNLOAD_FOLDER = "downloads"
 os.makedirs(DOWNLOAD_FOLDER, exist_ok=True)
 
+# =========================
+# MP4 to GIF Converter
+# =========================
+
+def mp4_to_gif(input_mp4, output_gif, palette_path):
+
+    p1 = subprocess.run(
+        [
+            "ffmpeg", "-y",
+            "-i", input_mp4,
+            "-vf", "fps=10,scale=480:-1:flags=bicubic,palettegen",
+            palette_path
+        ],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True
+    )
+
+    if p1.returncode != 0:
+        print("ERRO FFmpeg (palette):")
+        print(p1.stderr)
+        raise Exception("Erro ao gerar palette")
+
+    p2 = subprocess.run(
+        [
+            "ffmpeg", "-y",
+            "-i", input_mp4,
+            "-i", palette_path,
+            "-filter_complex",
+            "fps=10,scale=480:-1:flags=bicubic[x];[x][1:v]paletteuse=dither=bayer:bayer_scale=5",
+            output_gif
+        ],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True
+    )
+
+    if p2.returncode != 0:
+        print("ERRO FFmpeg (gif):")
+        print(p2.stderr)
+        raise Exception("Erro ao gerar GIF")
+
+    if os.path.exists(palette_path):
+        os.remove(palette_path)
+
+
+
+
+
+@app.route("/mp4-to-gif", methods=["POST"])
+def convert():
+    video = request.files.get("video")
+
+    if not video:
+        return "Nenhum arquivo enviado", 400
+
+    uid = str(uuid.uuid4())
+
+    input_path = os.path.join(DOWNLOAD_FOLDER, f"{uid}.mp4")
+    output_path = os.path.join(DOWNLOAD_FOLDER, f"{uid}.gif")
+    palette_path = os.path.join(DOWNLOAD_FOLDER, f"{uid}_palette.png")
+
+    video.save(input_path)
+
+    try:
+        mp4_to_gif(input_path, output_path, palette_path)
+    except Exception as e:
+        return f"<pre>{str(e)}</pre>", 500
+
+    if not os.path.exists(output_path):
+        return "GIF não foi gerado", 500
+
+    response = send_file(
+        output_path,
+        mimetype="image/gif",
+        as_attachment=True,
+        download_name="converted.gif"
+    )
+
+    delete_file_later(input_path)
+    delete_file_later(output_path)
+
+    return response
+
 
 # =================================
 # cookies de variáveis de ambiente
